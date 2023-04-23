@@ -1,0 +1,16 @@
+body {}
+
+#beranda {
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    min-height: 500px;
+}
+
+#footer {
+    background-color: #0d6efd;
+    min-height: 220px;
+}
+
+footer {
+    background-color: #0d6efd;
+}
