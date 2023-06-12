@@ -40,10 +40,10 @@
                                     </tr>
                                     <?php $i++; ?>
                                 <?php endforeach; ?>
-                            <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
+            <?php endif; ?>
         </div>
     </div>

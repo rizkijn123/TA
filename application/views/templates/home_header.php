@@ -5,101 +5,122 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-    #map {
-        height: 300px;
-        width: 600px;
-    }
+        #map {
+            height: 300px;
+            width: 600px;
+        }
     </style>
     <title><?= $title; ?></title>
     <link href="<?= base_url('assets/'); ?>style.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
     <script>
-    var map;
-    var x;
-    var y;
-    var marker = null;
-
-    function initMap() {
-
-        var myLatLng = {
-            lat: -6.914864,
-            lng: 107.608238
-        };
-
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: myLatLng,
-            zoom: 14
-        });
-
-    }
-
-    function loadmaps() {
-        $.getJSON("https://api.thingspeak.com/channels/1848875/feeds.json?api_key=0ATKYV8VNB0AL6RJ&results=1", function(
-            result) {
-
-            var m = result;
-
-            x = Number(m.feeds[0].field2);
-            //alert(x);
-
-        });
-        $.getJSON("https://api.thingspeak.com/channels/1848875/feeds.json?api_key=0ATKYV8VNB0AL6RJ&results=1", function(
-            result) {
-
-            var m = result;
-            y = Number(m.feeds[0].field3);
+        var map;
+        var x;
+        var y;
+        var marker = null;
+        var m;
+        var view;
 
 
-        }).done(function() {
+        function initMap() {
 
-            initialize();
-        });
+            var myLatLng = {
+                lat: -6.914864,
+                lng: 107.608238
+            };
 
-    }
-    window.setInterval(function() {
-        loadmaps();
-    }, 2000);
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: myLatLng,
+                zoom: 14,
+                mapTypeId: 'satellite'
+            });
 
-    function initialize() {
-        //alert(y);
-        var newPoint = new google.maps.LatLng(x, y);
+        }
 
-        if (marker) {
-            // Marker already created - Move it
-            marker.setPosition(newPoint);
-        } else {
-            // Marker does not exist - Create it
-            marker = new google.maps.Marker({
-                position: newPoint,
-                map: map
+        function loadmaps() {
+            // $.getJSON("<?= base_url('load/'); ?>api.php?devicename=<?= $user['deviceName']; ?>", function(
+            // $.getJSON("https://api.qubitro.com/v1/projects/8e0a61f4-ae72-4d83-a5b8-c929386aec87/devices/<?= $user['api_device'] ?>/data?keys=Btn,Lat,Lon&period=30&limit=1&page=1", function(result) {
+            //     var m = result;
+            //     x = Number(m[0].response.Lat);
+            // }).done(function() {
+            //     document.getElementById("lat").innerHTML = x;
+            // });
+            // $.getJSON("<?= base_url('load/'); ?>api.php?devicename=<?= $user['deviceName']; ?>", function(
+            // $.getJSON("https://api.qubitro.com/v1/projects/8e0a61f4-ae72-4d83-a5b8-c929386aec87/devices/<?= $user['api_device'] ?>/data?keys=Btn,Lat,Lon&period=30&limit=1&page=1", function(result) {
+            //     var m = result;
+            //     y = Number(m[0].response.Lon);
+            //     view = Number(m[0].response.Btn);
+            // }).done(function() {
+            //     document.getElementById("long").innerHTML = y;
+            //     if (view == "1") {
+            //         document.getElementById("pesan").setAttribute('class', 'alert alert-danger text-white mx-3');
+            //         document.getElementById("pesan").innerHTML = "Button Active";
+            //     } else {
+            //         document.getElementById("pesan").setAttribute('class', 'alert alert-success text-white mx-3');
+            //         document.getElementById("pesan").innerHTML = "Button Off";
+            //     }
+            //     initialize();
+            // }).headers({
+            //     'Authorization': 'Bearer qPpMmAM42dokpKSv9c3cz2YCO-ElVyuSiESqhELA',
+            //     'Content-Type': 'application/json'
+            // });
+            $.ajax({
+                url: "https://api.qubitro.com/v1/projects/8e0a61f4-ae72-4d83-a5b8-c929386aec87/devices/<?= $user['api_device'] ?>/data?keys=Btn,Lat,Lon&period=30&limit=1&page=1",
+                method: "GET",
+                timeout: 0,
+                headers: {
+                    'Authorization': 'Bearer qPpMmAM42dokpKSv9c3cz2YCO-ElVyuSiESqhELA',
+                },
+            }).done(function(result) {
+                var m = result;
+                y = Number(m.response[0].lon);
+                view = Number(m.response[0].btn);
+                x = Number(m.response[0].lat);
+                document.getElementById("lat").innerHTML = x;
+                document.getElementById("long").innerHTML = y;
+                if (view == "1") {
+                    document.getElementById("pesan").setAttribute('class', 'p-3 text-white bg-danger border border-danger-subtle rounded-3 mb-3');
+                    document.getElementById("pesan").innerHTML = "Button Active";
+                } else {
+                    document.getElementById("pesan").setAttribute('class', 'p-3 text-white bg-success border border-success-subtle rounded-3 mb-3');
+                    document.getElementById("pesan").innerHTML = "Button Off";
+                }
+                initialize();
+            });
+        }
+        window.setInterval(function() {
+            loadmaps();
+        }, 2000);
+
+        function initialize() {
+            //alert(y);
+            var newPoint = new google.maps.LatLng(x, y);
+
+            if (marker) {
+                // Marker already created - Move it
+                marker.setPosition(newPoint);
+            } else {
+                // Marker does not exist - Create it
+                marker = new google.maps.Marker({
+                    position: newPoint,
+                    map: map
+                });
+            }
+
+            // Center the map on the new position
+            map.setCenter(newPoint);
+            var infowindow = new google.maps.InfoWindow({
+                content: '<p>Marker Location:' + marker.getPosition() + '</p>'
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(map, marker);
             });
         }
 
-        // Center the map on the new position
-        map.setCenter(newPoint);
-        var infowindow = new google.maps.InfoWindow({
-            content: '<p>Marker Location:' + marker.getPosition() + '</p>'
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(map, marker);
-        });
-    }
-
-    google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
-    <script>
-    setInterval(function() {
-        $("#lat").load("<?= base_url('load/'); ?>lat.php");
-    }, 600);
-    setInterval(function() {
-        $("#long").load("<?= base_url('load/'); ?>long.php");
-    }, 600);
-    setInterval(function() {
-        $("#pesan").load("<?= base_url('load/'); ?>test.php");
-    }, 600);
+        google.maps.event.addDomListener(window, 'load', initialize);
     </script>
 </head>
 
@@ -108,15 +129,17 @@
     <!-- navbar -->
     <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">PTA LoRaWAN</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="<?= base_url(''); ?>">Panic Button</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="<?= base_url(''); ?>">Home</a>
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#footer">Tentang Kami</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url('auth'); ?>">Login</a>

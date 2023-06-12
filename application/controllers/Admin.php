@@ -14,7 +14,7 @@ class Admin extends CI_Controller
         $data['title'] = 'Dashboard Admin';
         $data['page'] = 'Admin';
         $data['page_title'] = 'Dashboard';
-        $this->db->where('role_id !=', 1);
+        // $this->db->where('role_id !=', 1);
         $data['deviceuser'] = $this->db->get('user')->result_array();
 
         $this->load->view('templates/head_default', $data);
