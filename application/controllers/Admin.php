@@ -26,6 +26,7 @@ class Admin extends CI_Controller
 
     public function device()
     {
+        $role_id = $this->session->userdata('role_id');
         $data['user'] = $this->db->get_where('user', ['email' => $this->session->userdata('email')])->row_array();
         $data['title'] = 'Add Device';
         $data['page'] = 'Admin';
@@ -43,7 +44,12 @@ class Admin extends CI_Controller
             $this->load->view('admin/device', $data);
             $this->load->view('templates/footer');
         } else {
-            if ($this->input->post('is_active') == null) {
+            if ($role_id == 3) {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger text-white" role="alert">
+                Akun testing tidak dapat menggunakan akses ini!
+              </div>');
+                redirect('admin/device');
+            } else if ($this->input->post('is_active') == null) {
                 $isActive = 0;
             } else {
                 $isActive = 1;
@@ -63,44 +69,76 @@ class Admin extends CI_Controller
 
     public function deletedevice($id)
     {
-        $this->db->delete('device', ['id' => $id]);
-        $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
-        New device added!
+        $role_id = $this->session->userdata('role_id');
+        if ($role_id == 3) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger text-white" role="alert">
+            Akun testing tidak dapat menggunakan akses ini!
+          </div>');
+            redirect('admin/device');
+        } else {
+            $this->db->delete('device', ['id' => $id]);
+            $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
+        Device deleted!
       </div>');
-        redirect('admin/device');
+            redirect('admin/device');
+        }
     }
     public function activate($id)
     {
-        $data = [
-            'is_active' => 1
-        ];
-        $this->db->update('device', $data, ['id' => $id]);
-        $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
-        Device can be used!
-      </div>');
-        redirect('admin/device');
+        $role_id = $this->session->userdata('role_id');
+        if ($role_id == 3) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger text-white" role="alert">
+            Akun testing tidak dapat menggunakan akses ini!
+          </div>');
+            redirect('admin/device');
+        } else {
+            $data = [
+                'is_active' => 1
+            ];
+            $this->db->update('device', $data, ['id' => $id]);
+            $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
+            Device can be used!
+          </div>');
+            redirect('admin/device');
+        }
     }
     public function nonactivate($id)
     {
-        $data = [
-            'is_active' => 0
-        ];
-        $this->db->update('device', $data, ['id' => $id]);
-        $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
+        $role_id = $this->session->userdata('role_id');
+        if ($role_id == 3) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger text-white" role="alert">
+            Akun testing tidak dapat menggunakan akses ini!
+          </div>');
+            redirect('admin/device');
+        } else {
+            $data = [
+                'is_active' => 0
+            ];
+            $this->db->update('device', $data, ['id' => $id]);
+            $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
         Device cannot be used!
       </div>');
-        redirect('admin/device');
+            redirect('admin/device');
+        }
     }
     public function deleteuserdevice($id)
     {
-        $data = [
-            'deviceName' => '-',
-            'api_device' => '-'
-        ];
-        $this->db->update('user', $data, ['id' => $id]);
-        $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
+        $role_id = $this->session->userdata('role_id');
+        if ($role_id == 3) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger text-white" role="alert">
+            Akun testing tidak dapat menggunakan akses ini!
+          </div>');
+            redirect('admin');
+        } else {
+            $data = [
+                'deviceName' => '-',
+                'api_device' => '-'
+            ];
+            $this->db->update('user', $data, ['id' => $id]);
+            $this->session->set_flashdata('message', '<div class="alert alert-success text-white" role="alert">
         Device deleted from user!
       </div>');
-        redirect('admin/device');
+            redirect('admin');
+        }
     }
 }
