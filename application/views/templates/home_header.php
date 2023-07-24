@@ -67,24 +67,24 @@
             //     'Content-Type': 'application/json'
             // });
             $.ajax({
-                url: "https://api.qubitro.com/v1/projects/8e0a61f4-ae72-4d83-a5b8-c929386aec87/devices/<?= $user['api_device'] ?>/data?keys=Btn,Lat,Lon&period=30&limit=1&page=1",
+                url: "https://api.qubitro.com/v2/projects/8e0a61f4-ae72-4d83-a5b8-c929386aec87/devices/<?= $user['api_device'] ?>/data?page=1&limit=1&range=all",
                 method: "GET",
                 timeout: 0,
                 headers: {
-                    'Authorization': 'Bearer qPpMmAM42dokpKSv9c3cz2YCO-ElVyuSiESqhELA',
+                    'Authorization': 'Bearer QB_WM2riP7S9Cqm2wQqtjBMgYTNoNTn4XAQqylv04xY',
                 },
             }).done(function(result) {
                 var m = result;
-                y = Number(m.response[0].lon);
-                view = Number(m.response[0].btn);
-                x = Number(m.response[0].lat);
+                y = Number(m.data[0].data.Lon);
+                view = Number(m.data[0].data.Btn);
+                x = Number(m.data[0].data.Lat);
                 document.getElementById("lat").innerHTML = x;
                 document.getElementById("long").innerHTML = y;
                 if (view == "1") {
-                    document.getElementById("pesan").setAttribute('class', 'p-3 text-white bg-danger border border-danger-subtle rounded-3 mb-3');
+                    document.getElementById("pesan").setAttribute('class', 'alert alert-danger text-white mx-3');
                     document.getElementById("pesan").innerHTML = "Button Active";
                 } else {
-                    document.getElementById("pesan").setAttribute('class', 'p-3 text-white bg-success border border-success-subtle rounded-3 mb-3');
+                    document.getElementById("pesan").setAttribute('class', 'alert alert-success text-white mx-3');
                     document.getElementById("pesan").innerHTML = "Button Off";
                 }
                 initialize();
